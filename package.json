@@ -31,7 +31,8 @@
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",
         "rxjs": "^6.6.6",
-        "snowpack": "^3.7.1"
+        "snowpack": "^3.7.1",
+        "socket.io-file": "^2.0.31"
     },
     "devDependencies": {
         "@nestjs/cli": "^7.6.0",
@@ -39,9 +40,11 @@
         "@nestjs/testing": "^7.6.15",
         "@types/express": "^4.17.11",
         "@types/jest": "^26.0.22",
+        "@types/multer": "^1.4.6",
         "@types/node": "^14.14.36",
         "@types/react": "^17.0.13",
         "@types/react-dom": "^17.0.8",
+        "@types/socket.io-file": "^2.0.2",
         "@types/supertest": "^2.0.10",
         "@typescript-eslint/eslint-plugin": "^4.19.0",
         "@typescript-eslint/parser": "^4.19.0",
