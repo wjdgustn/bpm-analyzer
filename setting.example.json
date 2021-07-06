@@ -1,0 +1,10 @@
+{
+  "PORT": 80,
+  "SERVER_NAME": "BPM Analyzer",
+  "USE_SSL": false,
+  "SSL_CERT": "",
+  "SSL_KEY": "",
+  "SESSION_SECRET": "secret",
+
+  "INDEX": [ "index.htm" , "index.html" ]
+}
