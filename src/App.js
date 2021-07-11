@@ -5,6 +5,7 @@ import {
     CssBaseline,
     Typography,
     Alert,
+    Backdrop,
 } from '@material-ui/core'
 import Header from './Header'
 import MusicTempo from 'music-tempo'
@@ -17,20 +18,49 @@ const App = () => {
     const [file, setFile] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [bpm, setBpm] = React.useState(null)
+    const [drag, setDrag] = React.useState(false)
+    const [alert, setAlert] = React.useState('')
 
     return (
-        <div>
+        <div
+            style={{
+                minHeight: '100vh',
+            }}
+            onDragOver={(e) => {
+                e.preventDefault()
+                setDrag(true)
+            }}
+            onDragLeave={() => {
+                setDrag(false)
+            }}
+            onDrop={(e) => {
+                e.preventDefault()
+                setBpm(null)
+                setDrag(false)
+                const file = e.dataTransfer.files[0]
+                if (!file.type.startsWith('audio/')) {
+                    return setAlert('오디오 파일만 사용 가능합니다.')
+                }
+                setAlert(null)
+                setFile(file)
+            }}
+        >
             <CssBaseline />
             <Header />
+            <Backdrop style={{ zIndex: 99999 }} open={drag}>
+                <Typography color="#fff" fontSize={40} fontWeight={900}>
+                    드래그해서 파일 선택하기
+                </Typography>
+            </Backdrop>
             <Container style={{ marginTop: 30 }}>
                 <Typography variant="h4">BPM 측정하기</Typography>
 
-                {bpm && (
+                {(bpm || alert) && (
                     <Alert
-                        severity="success"
+                        severity={alert ? 'error' : 'success'}
                         style={{ marginBottom: 10, marginTop: 5 }}
                     >
-                        BPM: {bpm}
+                        {alert ? alert : <>BPM: {bpm}</>}
                     </Alert>
                 )}
 
@@ -70,34 +100,40 @@ const App = () => {
                     loadingPosition="start"
                     onClick={async () => {
                         setLoading(true)
+                        setBpm(null)
+                        setAlert(null)
                         const reader = new FileReader()
                         reader.onload = function (fileEvent) {
                             context.decodeAudioData(
                                 fileEvent.target.result,
                                 (buffer) => {
-                                    let audioData = []
+                                    try {
+                                        let audioData = []
 
-                                    if (buffer.numberOfChannels === 2) {
-                                        const channel1Data =
-                                            buffer.getChannelData(0)
-                                        const channel2Data =
-                                            buffer.getChannelData(1)
-                                        const length = channel1Data.length
-                                        for (let i = 0; i < length; i++) {
-                                            audioData[i] =
-                                                (channel1Data[i] +
-                                                    channel2Data[i]) /
-                                                2
+                                        if (buffer.numberOfChannels === 2) {
+                                            const channel1Data =
+                                                buffer.getChannelData(0)
+                                            const channel2Data =
+                                                buffer.getChannelData(1)
+                                            const length = channel1Data.length
+                                            for (let i = 0; i < length; i++) {
+                                                audioData[i] =
+                                                    (channel1Data[i] +
+                                                        channel2Data[i]) /
+                                                    2
+                                            }
+                                        } else {
+                                            audioData = buffer.getChannelData(0)
                                         }
-                                    } else {
-                                        audioData = buffer.getChannelData(0)
+
+                                        const tempo = new MusicTempo(audioData)
+
+                                        setLoading(false)
+
+                                        setBpm(Math.round(tempo.tempo))
+                                    } catch (e) {
+                                        setAlert(e.message)
                                     }
-
-                                    const tempo = new MusicTempo(audioData)
-
-                                    setLoading(false)
-
-                                    setBpm(Math.round(tempo.tempo))
                                 },
                             )
                         }
