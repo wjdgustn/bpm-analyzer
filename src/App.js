@@ -48,7 +48,7 @@ const App = () => {
             <CssBaseline />
             <Header />
             <Backdrop style={{ zIndex: 99999 }} open={drag}>
-                <Typography color="#fff" fontSize={40} fontWeight={900}>
+                <Typography color="#fff" fontSize={30} fontWeight={900}>
                     드래그해서 파일 선택하기
                 </Typography>
             </Backdrop>
